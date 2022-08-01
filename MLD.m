@@ -1,8 +1,20 @@
-function [decoding,confusion] = MLD(A)
+function [decoding,confusion,accuracy] = MLD(A)
 % maximum likelihood decoder
+%
 % A is a matrix of size n_neurons x n_stim x n_trials
 % one way to obtain A is to average neuronal activity
-% over a time window after the onset of each stimulus 
+% over a time window after the onset of each stimulus
+% 
+% decoding : n_stim x n_trials
+%           decoding(s,t) indicates which stimulus was decoded for 
+%           for trial t of stimulus s  
+%
+% confusion : n_stim x n_stim confusion matrix 
+%           confusion(s1,s2) indicates the number of trials of 
+%           presented stimulus s1 classified as stimulus s2
+%           The rows sum to the number of trials
+%
+% accuracy : proportion of trials correctly classified
 
     [n_neurons,n_stim,n_trials] = size(A);
     
@@ -17,8 +29,9 @@ function [decoding,confusion] = MLD(A)
         end
     end
     
-    % IID 
-    LP_iid = squeeze(sum(P,1)); % n_stim (test) x n_stim (distrib. est.) x n_trials 
+    % We make the assumption that neurons are independent. 
+    % This is of course wrong but useful for computation.
+    LP_iid = squeeze(nansum(P,1)); % n_stim (test) x n_stim (distrib. est.) x n_trials 
     [~,argmax] = max(LP_iid,[],2,'omitnan');
     decoding = squeeze(argmax);
     confusion = zeros(n_stim,n_stim);
@@ -28,10 +41,13 @@ function [decoding,confusion] = MLD(A)
         end
     end
     
+    accuracy = sum(diag(confusion))/sum(confusion(:));
+    
     function [f,h] = kde(x,xq)
-    % 1D kernel density estimation on rows of 2D matrix x
+    % 1D kernel density estimation that can work on the rows of a 2D input
+    % This is faster than to loop over neurons one by one
     % xq : points where to evaluate the density, 1D column vector
-    % x  : 2D matrix of samples 
+    % x  : n_cells x (n_trials - 1) matrix
 
         % Bandwidth estimation: Scott's rule
         N = size(x,2);
