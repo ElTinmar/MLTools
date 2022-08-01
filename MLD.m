@@ -45,7 +45,7 @@ function [decoding,confusion,accuracy] = MLD(A)
     
     function [f,h] = kde(x,xq)
     % 1D kernel density estimation that can work on the rows of a 2D input
-    % This is faster than to loop over neurons one by one
+    % This is faster than to loop over neurons one by one and use ksdensity
     % xq : points where to evaluate the density, 1D column vector
     % x  : n_cells x (n_trials - 1) matrix
 
