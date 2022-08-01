@@ -1,5 +1,9 @@
 function [decoding,confusion] = MLD(A)
-    
+% maximum likelihood decoder
+% A is a matrix of size n_neurons x n_stim x n_trials
+% one way to obtain A is to average neuronal activity
+% over a time window after the onset of each stimulus 
+
     [n_neurons,n_stim,n_trials] = size(A);
     
     % leave-one-out  
