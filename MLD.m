@@ -23,7 +23,8 @@ function [decoding,confusion,accuracy] = MLD(A)
     for trial = 1:n_trials
         loo_ind = setdiff(1:n_trials,trial);
         for stim_type1 = 1:n_stim
-            for stim_type2 = 1:n_stim
+            for stim_type2 = 1:n_stims
+                % it should be fx * dx, but dx is constant so it does not matter
                 P(:,stim_type1,stim_type2,trial) = log(kde(squeeze(A(:,stim_type2,loo_ind)),A(:,stim_type1,trial)));
             end
         end
